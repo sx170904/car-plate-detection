@@ -12,7 +12,7 @@ import streamlit as st
 import torch
 import torchvision.transforms as T
 from PIL import Image, ImageDraw, ImageFont
-
+import easyocr
 from model_arch import SSPD
 
 # ---------- Page setup ----------
@@ -36,7 +36,6 @@ def load_ocr_reader():
     ######################################################
     # Adapted from https://github.com/JaidedAI/EasyOCR
     ######################################################
-    import easyocr
     # gpu=False keeps the demo portable; change to True if you want GPU OCR.
     return easyocr.Reader(['en'], gpu=torch.cuda.is_available(), verbose=False)
 
