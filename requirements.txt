@@ -4,3 +4,4 @@ streamlit
 Pillow
 pandas
 numpy
+easyocr
