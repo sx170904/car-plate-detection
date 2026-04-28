@@ -76,8 +76,12 @@ def draw_detections(pil_img, boxes_normalized):
 
 
 # ---------- Helper: run detection + render results ----------
-def run_and_display(pil_img):
-    """Run the detector on a PIL image and render the full results UI."""
+def run_and_display(pil_img, source_key):
+    """Run the detector on a PIL image and render the full results UI.
+
+    source_key (str): unique identifier for the input source ('upload' or 'camera').
+    Used to make widget IDs unique so the same widget can appear in both tabs.
+    """
     # Preprocess + inference
     x = transform(pil_img).unsqueeze(0).to(device)
     t0 = time.time()
@@ -118,7 +122,7 @@ def run_and_display(pil_img):
         st.warning("No plates detected above the confidence threshold. "
                    "Try lowering it in the sidebar.")
 
-    # Download button for the annotated image
+    # Download button for the annotated image (unique key per source)
     buf = BytesIO()
     annotated.save(buf, format="PNG")
     st.download_button(
@@ -126,6 +130,7 @@ def run_and_display(pil_img):
         data=buf.getvalue(),
         file_name="detection_result.png",
         mime="image/png",
+        key=f"download_{source_key}",
     )
 
 
@@ -137,7 +142,7 @@ with tab_upload:
                                 type=["jpg", "jpeg", "png"])
     if uploaded is not None:
         pil_img = Image.open(BytesIO(uploaded.read())).convert("RGB")
-        run_and_display(pil_img)
+        run_and_display(pil_img, source_key="upload")
     else:
         st.info("👆 Upload an image to get started.")
         st.markdown(
@@ -153,6 +158,6 @@ with tab_camera:
     camera_img = st.camera_input("Take a photo")
     if camera_img is not None:
         pil_img = Image.open(BytesIO(camera_img.getvalue())).convert("RGB")
-        run_and_display(pil_img)
+        run_and_display(pil_img, source_key="camera")
     else:
         st.info("📷 Click the camera button above to capture an image.")
